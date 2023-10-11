@@ -33,7 +33,7 @@ public class BatchConfig {
 
         return stepBuilderFactory
                 .get("imprimeOlaStep")
-                .tasklet((stepContribution, chunkContext) -> {
+                .tasklet((contribution, context) -> {
 
                     System.out.println(":::: Óla, mundo! ::::");
 
