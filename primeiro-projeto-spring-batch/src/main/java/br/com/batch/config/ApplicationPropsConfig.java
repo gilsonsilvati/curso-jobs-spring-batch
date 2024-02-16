@@ -12,11 +12,11 @@ public class ApplicationPropsConfig {
     public PropertySourcesPlaceholderConfigurer configurer() {
 
         PropertySourcesPlaceholderConfigurer propertySources = new PropertySourcesPlaceholderConfigurer();
+
         propertySources.setLocation(
                 new FileSystemResource("/etc/config/primeiro-projeto-spring-batch/application.properties")
         );
 
         return propertySources;
     }
-
 }
