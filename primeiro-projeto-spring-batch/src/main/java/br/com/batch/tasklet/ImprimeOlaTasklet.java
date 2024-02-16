@@ -22,5 +22,4 @@ public class ImprimeOlaTasklet implements Tasklet {
 
         return RepeatStatus.FINISHED;
     }
-
 }
