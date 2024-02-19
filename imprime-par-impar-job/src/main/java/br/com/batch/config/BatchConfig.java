@@ -2,34 +2,34 @@ package br.com.batch.config;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.function.FunctionItemProcessor;
 import org.springframework.batch.item.support.IteratorItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.List;
 
 @Configuration
-@EnableBatchProcessing
 public class BatchConfig {
 
-    @Autowired
-    private JobBuilderFactory jobBuilderFactory;
+    private final JobRepository jobRepository;
+    private final PlatformTransactionManager transactionManager;
 
-    @Autowired
-    private StepBuilderFactory stepBuilderFactory;
+    public BatchConfig(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        this.jobRepository = jobRepository;
+        this.transactionManager = transactionManager;
+    }
 
     @Bean
     public Job imprimeParImparJob() {
 
-        return jobBuilderFactory
-                .get("imprimeParImparJob")
+        return new JobBuilder("imprimeParImparJob", jobRepository)
                 .start(imprimeParImparStep())
                 .incrementer(new RunIdIncrementer())
                 .build();
@@ -37,9 +37,8 @@ public class BatchConfig {
 
     private Step imprimeParImparStep() {
 
-        return stepBuilderFactory
-                .get("imprimeParImparStep")
-                .<Integer, String> chunk(10)
+        return new StepBuilder("imprimeParImparStep", jobRepository)
+                .<Integer, String> chunk(10, transactionManager)
                 .reader(contaAteDezReader())
                 .processor(parOuImparProcessor())
                 .writer(imprimeWriter())
@@ -68,5 +67,4 @@ public class BatchConfig {
 
         return String.format("Item %s é %s", item, parOuImpar);
     }
-
 }
